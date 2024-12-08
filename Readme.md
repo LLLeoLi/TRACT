@@ -94,4 +94,4 @@ I haven't check the hyperparameters in the config, so they may not be optimal
 - [ ] Create a new training pipeline in Llama-factory instead of directly modifying the SFT-related codes.
 - [x] RAFT + CoT? 
 - [ ] The current loss is only averaged on the same device but not across device. This should be fixed in `transformers==4.47.0`. However, Llama-Factory currently only supports `transformers<=4.46.1`.
-- [] The RAFT loss is currently hard-coded for Mistral-7b-Instruct. Make it adaptable to other models.
+- [ ] The RAFT loss is currently hard-coded for Mistral-7b-Instruct. Make it adaptable to other models.
