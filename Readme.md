@@ -1,7 +1,6 @@
 # RAFT for LLM-as-a-Judge
 
 This repo contains the under-developping code for [RAFT](https://openreview.net/pdf?id=8euJaTveKw) for LLM-as-a-judge.
-Currently, we use 
 
 > ⚠️ **Warning:** This repo is under active development.
 
