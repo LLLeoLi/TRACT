@@ -69,13 +69,6 @@ def compute_raft_loss(outputs, labels, num_items_in_batch=None):
         keepdim = True,
     )
 
-    print(f"The prob is {probs}")
-    print(f"Weighted scores: {weighted_scores}")
-    print(f"Label scores: {label_scores}")
-    print(f"Num items in batch: {num_items_in_batch}")
-    print("="*50)
-
-
     # Compute the MSE loss
     loss = torch.nn.functional.mse_loss(
         input = weighted_scores, 
