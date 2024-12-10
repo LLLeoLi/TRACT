@@ -18,6 +18,9 @@ def main(args):
     if args.tokenizer is None and args.show_tokens:
         raise ValueError("Cannot show token ids without a tokenizer.")
 
+    if args.validation_ratio < 0 or args.validation_ratio > 1:
+        raise ValueError("The validation ratio must be between 0 and 1.")
+
     # Prepare the output directory
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
@@ -85,98 +88,108 @@ def main(args):
         output_token_count = []
 
     # Write the output file
-    with open(output_file_name, 'w', encoding = 'utf-8') as f:
-        for idx, instance in tqdm(enumerate(dataset)):
-            output = instance.pop('output')
-            full_input_str = template.format(**instance)
 
-            dict_to_write = {
-                'conversations':[
-                    {
-                        'from': 'human',
-                        'value': full_input_str,
-                    },
-                    {
-                        'from': "gpt",
-                        "value": output,
-                    }
-                ]
-            }
+    if args.validation_ratio > 0:
+        output_file_names = [output_file_name.replace('.jsonl', f'_train.jsonl'), output_file_name.replace('.jsonl', f'_validation.jsonl')]
+        datasets = dataset.train_test_split(test_size = args.validation_ratio)
+        datasets = datasets['train'], datasets['test']
+    else:
+        output_file_names = [output_file_name]
+        datasets = [dataset]
 
-            f.write(json.dumps(dict_to_write) + '\n')
+    for dataset, output_file_name in zip(datasets, output_file_names):
+        with open(output_file_name, 'w', encoding = 'utf-8') as f:
+            for idx, instance in tqdm(enumerate(dataset), total = len(dataset)):
+                output = instance.pop('output')
+                full_input_str = template.format(**instance)
 
-            if idx == 0:
-                logger.info(f"Example input:\n{Fore.YELLOW}{json.dumps(dict_to_write, indent = 4)}{Style.RESET_ALL}")
-                logger.info(f"Example output: {Fore.YELLOW}{output}{Style.RESET_ALL}")
+                dict_to_write = {
+                    'conversations':[
+                        {
+                            'from': 'human',
+                            'value': full_input_str,
+                        },
+                        {
+                            'from': "gpt",
+                            "value": output,
+                        }
+                    ]
+                }
 
-            if args.tokenizer is not None:
-                full_token_count.append(
-                    len(
-                        tokenizer.encode(
-                            tokenizer.apply_chat_template(
-                                [
-                                    {
-                                        'role': 'user',
-                                        'content': full_input_str
-                                    },
-                                    {
-                                        'role': 'assistant',
-                                        'content': output
-                                    }
-                                ],
-                                tokenize = False
+                f.write(json.dumps(dict_to_write) + '\n')
+
+                if idx == 0:
+                    logger.info(f"Example input:\n{Fore.YELLOW}{json.dumps(dict_to_write, indent = 4)}{Style.RESET_ALL}")
+                    logger.info(f"Example output: {Fore.YELLOW}{output}{Style.RESET_ALL}")
+
+                if args.tokenizer is not None:
+                    full_token_count.append(
+                        len(
+                            tokenizer.encode(
+                                tokenizer.apply_chat_template(
+                                    [
+                                        {
+                                            'role': 'user',
+                                            'content': full_input_str
+                                        },
+                                        {
+                                            'role': 'assistant',
+                                            'content': output
+                                        }
+                                    ],
+                                    tokenize = False
+                                )
                             )
                         )
                     )
-                )
-                output_token_count.append(
-                    len(
-                        tokenizer.encode(output)
+                    output_token_count.append(
+                        len(
+                            tokenizer.encode(output)
+                        )
                     )
+
+        if args.show_tokens:
+            instance = dataset[0]
+            for possible_score in ['1', '2', '3', '4', '5']:
+                if args.mode == "score_only":
+                    output = possible_score
+                else:
+                   output = f'[RESULT] {possible_score}'
+
+                full_input_str = template.format(**instance)
+                full_str = tokenizer.apply_chat_template(
+                    [
+                        {
+                            'role': 'user',
+                            'content': full_input_str
+                        },
+                        {
+                            'role': 'assistant',
+                            'content': output
+                        }
+                    ],
+                    tokenize = False
                 )
 
-    if args.show_tokens:
-        instance = dataset[0]
-        for possible_score in ['1', '2', '3', '4', '5']:
-            if args.mode == "score_only":
-                output = possible_score
-            else:
-               output = f'[RESULT] {possible_score}'
-            
-            full_input_str = template.format(**instance)
-            full_str = tokenizer.apply_chat_template(
-                [
-                    {
-                        'role': 'user',
-                        'content': full_input_str
-                    },
-                    {
-                        'role': 'assistant',
-                        'content': output
-                    }
-                ],
-                tokenize = False
-            )
-        
-                
-            ids= tokenizer.encode(full_str, add_special_tokens = False)[-6:]
-            tokens = tokenizer.convert_ids_to_tokens(ids)
 
-            logger.info(f"Tokens: {Fore.GREEN}{tokens}{Style.RESET_ALL}")
-            logger.info(f"Token ids: {Fore.GREEN}{ids}{Style.RESET_ALL}")
+                ids= tokenizer.encode(full_str, add_special_tokens = False)[-6:]
+                tokens = tokenizer.convert_ids_to_tokens(ids)
+
+                logger.info(f"Tokens: {Fore.GREEN}{tokens}{Style.RESET_ALL}")
+                logger.info(f"Token ids: {Fore.GREEN}{ids}{Style.RESET_ALL}")
 
 
-    # Prepare the data_info_dict
-    data_info_dict = {
-        output_file_name.split('/')[-1].split('.')[0]: {
-            "file_name": output_file_name,
-            "formatting": "sharegpt",
-            "columns": {
-                "messages": "conversations",
-            }
-        },
-    }
-    logger.info(f"A potential {Fore.YELLOW}data_info.json{Style.RESET_ALL} file for the dataset:\n{json.dumps(data_info_dict, indent = 2)}")
+        # Prepare the data_info_dict
+        data_info_dict = {
+            output_file_name.split('/')[-1].split('.')[0]: {
+                "file_name": output_file_name,
+                "formatting": "sharegpt",
+                "columns": {
+                    "messages": "conversations",
+                }
+            },
+        }
+        logger.info(f"A potential {Fore.YELLOW}data_info.json{Style.RESET_ALL} file for the dataset:\n{json.dumps(data_info_dict, indent = 2)}")
 
     if args.tokenizer is not None:
         logger.info(f"Average number of tokens for full sequence (input + output): {Fore.GREEN}{np.mean(full_token_count):.2f}{Style.RESET_ALL}")
@@ -198,7 +211,7 @@ if __name__ == '__main__':
         --mode feedback_score \
         --prompt_dir prompts \
         --tokenizer mistralai/Mistral-7B-Instruct-v0.2 \
-        --num_samples 20
+        --num_samples -1
 
     '''
     parser = argparse.ArgumentParser()
@@ -210,5 +223,6 @@ if __name__ == '__main__':
     parser.add_argument("--mode", choices = ['score_only', 'feedback_score'], required = True)
     parser.add_argument("--prompt_dir", type = str, default = 'prompts')
     parser.add_argument("--show_tokens", action = 'store_true', help = "Whether to show the token ids for the last few tokens.")
+    parser.add_argument('--validation_ratio', type = float, default = 0.05, help = "The ratio of the dataset to use for validation.")
     args = parser.parse_args()
     main(args)

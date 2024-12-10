@@ -1,0 +1,30 @@
+{
+  "Feedback-Collection_score_only_validation": {
+    "file_name": "data/Feedback-Collection_score_only_validation.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
+  },
+  "Feedback-Collection_score_only_train": {
+    "file_name": "data/Feedback-Collection_score_only_train.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
+  },
+  "Feedback-Collection_feedback_score_validation": {
+    "file_name": "data/Feedback-Collection_feedback_score_validation.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
+  },
+  "Feedback-Collection_feedback_score_train": {
+    "file_name": "data/Feedback-Collection_feedback_score_train.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
+  }
+}

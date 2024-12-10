@@ -58,13 +58,13 @@ def compute_raft_loss(outputs, labels, num_items_in_batch=None):
         # dtype=logits.dtype,
     )
 
-    logits = logits[..., -2, score_to_indices].contiguous() # Only get the logits for the last token for the score
+    logits = logits[..., -2, :] # Only get the logits for the -2nd token. The last token is the EOS token
     probs = torch.softmax(logits, dim=-1) # Shape: (batch_size, vocab_size)
+    score_grid_probs = probs[..., -2, score_to_indices].contiguous() # 
 
     # Compute the weighted sum of the score
-
     weighted_scores = torch.sum(
-        probs * torch.tensor(score_grids, device=probs.device),
+        score_grid_probs * torch.tensor(score_grids, device=probs.device),
         dim = -1,
         keepdim = True,
     )
