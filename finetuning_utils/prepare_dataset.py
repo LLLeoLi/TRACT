@@ -21,6 +21,9 @@ def main(args):
     if args.validation_ratio < 0 or args.validation_ratio > 1:
         raise ValueError("The validation ratio must be between 0 and 1.")
 
+    if args.cot_no_result and args.mode == 'score_only':
+        raise ValueError("The cot_no_result flag cannot be used with the score_only mode. It is only used for the feedback_score mode.")
+    
     # Prepare the output directory
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
@@ -42,6 +45,9 @@ def main(args):
         args.output_dir, 
         f"{args.dataset.split('/')[-1]}_{args.mode}.jsonl"
     )
+    if args.cot_no_result:
+        output_file_name = output_file_name.replace('.jsonl', '_cot_no_result.jsonl')
+
     logger.info(f"Output file: {Fore.GREEN}{output_file_name}{Style.RESET_ALL}")
 
     # Prepare the template file
@@ -101,6 +107,13 @@ def main(args):
         with open(output_file_name, 'w', encoding = 'utf-8') as f:
             for idx, instance in tqdm(enumerate(dataset), total = len(dataset)):
                 output = instance.pop('output')
+
+                if args.cot_no_result:
+                    if 'So the overall' not in output:
+                        continue
+                    final_score = output.split('[RESULT]')[-1].strip()
+                    output = output.split('So the overall')[0].strip() + f' So the overall score is {final_score}'
+
                 full_input_str = template.format(**instance)
 
                 dict_to_write = {
@@ -211,7 +224,8 @@ if __name__ == '__main__':
         --mode feedback_score \
         --prompt_dir prompts \
         --tokenizer mistralai/Mistral-7B-Instruct-v0.2 \
-        --num_samples -1
+        --num_samples 30 \
+        --cot_no_result
 
     '''
     parser = argparse.ArgumentParser()
@@ -224,5 +238,6 @@ if __name__ == '__main__':
     parser.add_argument("--prompt_dir", type = str, default = 'prompts')
     parser.add_argument("--show_tokens", action = 'store_true', help = "Whether to show the token ids for the last few tokens.")
     parser.add_argument('--validation_ratio', type = float, default = 0.05, help = "The ratio of the dataset to use for validation.")
+    parser.add_argument("--cot_no_result", action = 'store_true', help = "This will remove the [RESULT] and anything after that in the output. In this case, the last sentence of the target should be 'So the overall score is xxx.'")
     args = parser.parse_args()
     main(args)

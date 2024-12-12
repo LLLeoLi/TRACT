@@ -87,9 +87,36 @@ llamafactory-cli train examples/finetune_raft.yaml
 
 I haven't check the hyperparameters in the config, so they may not be optimal
 
+## Inference
+
+The inference codes are in `inference/`.
+Run inference by 
+```
+python3 inference.py \
+    --output_dir evaluation_result \
+    --dataset prometheus-eval/Feedback-Bench \
+    --mode feedback_score \
+    --prompt_dir ../finetuning_utils/prompts \
+    --model_name_or_path ../models/lm/feedback_score/ \
+    --tokenizer mistralai/Mistral-7B-Instruct-v0.2 \
+    --num_samples 30 \
+    --score_generation_mode raft \
+    --tensor_parallel_size 2
+```
+Use `python3 inference.py -h` to see how to use the arguments.
+Some important arguments:
+- `--mode`: This determines whether to generate CoT then the score (`feedback_score`) or directly generate the score (`score_only`)
+- `--score_generation_mode`: Whether to generate the score using standard LM decoding/sampling (`decode`) or using MALI (`raft`).
+
+
+The codes for RAFT during inference are defined by `raft_score_processor` located in `inference/inference_utils/generation_utils.py`
+
 
 ## TODO
-- [ ] Prepare the inference code
+- [x] Prepare the inference code
+- [ ] The instruction prompt for score-only is slightly wrong. Need to re-generate the dataset for score-only and fine-tune using LM loss + score-only again.
+- [ ] Double check the code to see if there are any errors in the dataset processing. The result I obtained by fine-tuning is much higher than the results in the original paper.
+- [ ] The Feedback-Collection's CoT output target contains sentences like *"So the overall score is 5."* Conditioning on this and sample a score using MALI is odd. Need to remove those sentences from the training data and re-train the model
 - [ ] Create a new training pipeline in Llama-factory instead of directly modifying the SFT-related codes.
 - [x] RAFT + CoT? 
 - [ ] The current loss is only averaged on the same device but not across device. This should be fixed in `transformers==4.47.0`. However, Llama-Factory currently only supports `transformers<=4.46.1`.

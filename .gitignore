@@ -1,1 +1,3 @@
 /finetuning_utils/data/*.jsonl
+/models/
+__pycache__/

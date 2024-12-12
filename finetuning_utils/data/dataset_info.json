@@ -26,5 +26,33 @@
     "columns": {
       "messages": "conversations"
     }
+  },
+  "Feedback-Collection_feedback_score_cot_no_result_validation": {
+    "file_name": "data/Feedback-Collection_feedback_score_cot_no_result_validation.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
+  },
+  "Feedback-Collection_feedback_score_cot_no_result_train": {
+    "file_name": "data/Feedback-Collection_feedback_score_cot_no_result_train.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
+  },
+  "Feedback-Collection_feedback_score_train_first_half": {
+    "file_name": "data/Feedback-Collection_feedback_score_train_first_half.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
+  },
+  "Feedback-Collection_feedback_score_cot_no_result_train_second_half": {
+    "file_name": "data/Feedback-Collection_feedback_score_cot_no_result_train_second_half.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations"
+    }
   }
 }
