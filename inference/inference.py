@@ -21,6 +21,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def main(args):
+    # Verify the arguments
+    if args.validation_ratio < 0 or args.validation_ratio >= 1:
+        raise ValueError(f"Invalid validation ratio: {args.validation_ratio}")
+    if args.validation_ratio != 0 and args.dataset == 'prometheus-eval/Feedback-Collection':
+        raise ValueError(f"Validation is not supported for the dataset {args.dataset}")
+    
+
     # Prepare the output directory
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
@@ -37,6 +44,10 @@ def main(args):
     logger.info(f"Dataset {Fore.GREEN}{args.dataset}{Style.RESET_ALL} ({Fore.GREEN}{num_samples}{Style.RESET_ALL} samples) loaded in {Fore.GREEN}{end_time - dataset_load_start_time:.2f} seconds{Style.RESET_ALL}")
                               
     
+    if args.validation_ratio != 0:
+        dataset.train_test_split(test_size = args.validation_ratio)
+        dataset = dataset['test']
+
     # Prepare the output file name
     output_file_name = os.path.join(
         args.output_dir, 
@@ -274,5 +285,6 @@ if __name__ == '__main__':
     parser.add_argument("--prompt_dir", type = str, default = 'prompts')
     parser.add_argument("--v100", action = 'store_true', help = "Use the V100 GPU")
     parser.add_argument("--max_model_len", type = int, default = 4096)
+    parser.add_argument("--validation_ratio", type = float, default = 0.1, help = "The ratio of the dataset to be used for validation splitted from the training set.")
     args = parser.parse_args()
     main(args)

@@ -25,7 +25,7 @@ from ...model import load_model, load_tokenizer
 from ..trainer_utils import create_modelcard_and_push
 from .metric import ComputeAccuracy, ComputeSimilarity, eval_logit_processor
 from .trainer import CustomSeq2SeqTrainer
-from .customize_loss import compute_entropy_loss, compute_raft_loss, SFTDataCollatorWith4DAttentionMaskForRegression
+from .customize_loss import compute_raft_loss, SFTDataCollatorWith4DAttentionMaskForRegression
 
 if TYPE_CHECKING:
     from transformers import Seq2SeqTrainingArguments, TrainerCallback
