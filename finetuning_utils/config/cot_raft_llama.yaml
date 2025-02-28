@@ -1,0 +1,46 @@
+### model
+model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
+
+### TODO: Parameters that Need to customize
+dataset: Feedback-Collection_feedback_score_cot_no_result_train,llama_lora_cot_raft_feedback_score_1_train
+eval_dataset: llama_lora_cot_raft_feedback_score_1_validation
+output_dir: saves/Llama-3.1-8B/lora/lora_cot_raft_mix_cot
+### The effective batch size should be 4
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 1
+resume_from_checkpoint: saves/Llama-3.1-8B/lora/lora_cot_raft_mix_cot/checkpoint-3000/
+
+### method
+stage: cot_raft
+do_train: true
+finetuning_type: lora
+lora_target: all
+deepspeed: examples/deepspeed/ds_z3_config.json
+
+### dataset
+template: llama3
+cutoff_len: 3000
+overwrite_cache: true
+preprocessing_num_workers: 16
+# max_samples: 100
+
+### output
+logging_steps: 10
+save_strategy: steps
+save_steps: 500
+plot_loss: true
+overwrite_output_dir: true
+
+### train
+learning_rate: 1.0e-5
+num_train_epochs: 1.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+enable_liger_kernel: true
+
+### eval
+do_eval: false
+# eval_strategy: epoch
+# per_device_eval_batch_size: 1

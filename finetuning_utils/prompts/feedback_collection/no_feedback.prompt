@@ -1,0 +1,24 @@
+###Task Description:
+An instruction (might include an Input inside it), a response to evaluate, a reference answer that gets a score of 5, and a score rubric representing an evaluation criterion is given.
+1. Write a score betweeb 1 to 5 that assesses the quality of the response strictly based on the given score rubric, not evaluating in general.
+2. The output format should look as follows: [RESULT] (an integer number between 1 and 5)
+3. Please do not generate any other opening, closing, and explanations about the score.
+
+###The instruction to evaluate:
+{orig_instruction}
+
+###Response to evaluate:
+{orig_response}
+
+###Reference Answer (Score 5):
+{orig_reference_answer}
+
+###Score Rubrics:
+[{orig_criteria}]
+Score 1: {orig_score1_description}
+Score 2: {orig_score2_description}
+Score 3: {orig_score3_description}
+Score 4: {orig_score4_description}
+Score 5: {orig_score5_description}
+
+###Score (an integer from 1 to 5):

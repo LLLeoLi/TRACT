@@ -32,6 +32,8 @@ def main(args):
     # Load and process the dataset
     dataset_load_start_time = time.time()
     dataset = load_dataset(args.dataset, split = 'train')
+    
+
     dataset = dataset.shuffle(seed = args.seed)
     if args.num_samples > 0:
         dataset = dataset.select(range(args.num_samples))
@@ -47,7 +49,8 @@ def main(args):
     )
     if args.cot_no_result:
         output_file_name = output_file_name.replace('.jsonl', '_cot_no_result.jsonl')
-
+    
+    
     logger.info(f"Output file: {Fore.GREEN}{output_file_name}{Style.RESET_ALL}")
 
     # Prepare the template file
@@ -224,8 +227,8 @@ if __name__ == '__main__':
         --mode feedback_score \
         --prompt_dir prompts \
         --tokenizer mistralai/Mistral-7B-Instruct-v0.2 \
-        --num_samples 30 \
-        --cot_no_result
+        --num_samples -1 \
+        --cot_no_result 
 
     '''
     parser = argparse.ArgumentParser()
