@@ -1,6 +1,6 @@
 # TRACT: Regression-Aware Fine-tuning Meets Chain-of-Thought Reasoning for LLM-as-a-Judge
 
-[![Arxiv](https://img.shields.io/badge/)]()
+[![Arxiv](https://img.shields.io/badge/arXiv-2503.04381-B21A1B)](https://arxiv.org/abs/2503.04381)
 [![Hugging Face Transformers](https://img.shields.io/badge/%F0%9F%A4%97-Transformers-blue)](https://huggingface.co/dcml0714/Llama-3.1-8B-Instruct-TRACT)
 
 This repo contains the code for the paper [TRACT: Regression-Aware Fine-tuning Meets Chain-of-Thought Reasoning for LLM-as-a-Judge
@@ -248,7 +248,15 @@ The codes for the RAIL predictor are defined by `raft_score_processor` located i
 If you find TRACT or our repo useful, please cite it by
 
 ```
-TBD
+@misc{chiang2025tractregressionawarefinetuningmeets,
+      title={TRACT: Regression-Aware Fine-tuning Meets Chain-of-Thought Reasoning for LLM-as-a-Judge}, 
+      author={Cheng-Han Chiang and Hung-yi Lee and Michal Lukasik},
+      year={2025},
+      eprint={2503.04381},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2503.04381}, 
+}
 ```
 
 If you use RAIL and RAFT, please also consider citing
