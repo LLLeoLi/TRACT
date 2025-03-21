@@ -157,7 +157,7 @@ We customize some functions for CoT-RAFT to make it compatible with Llama-factor
 
 ### 3. Stage 1 TRACT Fine-tuning
 
-We Fine-tune with Llama-Factory. You can follow the how fine-tuning is done in Llama-Factory. For example, you can copy the `finetuning_utils/cot_raft_mistral.yaml` to `$llama-factory_root/examples/train_lora` and run fine-tuning by 
+We Fine-tune with Llama-Factory. You can follow the how fine-tuning is done in Llama-Factory. For example, you can copy the `finetuning_utils/config/cot_raft_mistral.yaml` to `$llama-factory_root/examples/train_lora` and run fine-tuning by 
 ```
 cd $llama-factory_root
 llamafactory-cli train examples/cot_raft_mistral.yaml
