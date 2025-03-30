@@ -137,7 +137,7 @@ We customize some functions for CoT-RAFT to make it compatible with Llama-factor
         ```
 - **Step 3**: Copy the file `finetuning_utils/cot_with_raft/custom_processor.py` to `$llama-factory_root/src/llamafactory/data/processors`
 - **Step 4**: Modify the file `$llama-factory_root/src/llamafactory/data/preprocess.py`:
-    - Add `from .processros.custom_processor import preprocess_cot_raft_dataset`
+    - Add `from .processors.custom_processor import preprocess_cot_raft_dataset`
     - Add 
         ```
         elif stage == "cot_raft":
